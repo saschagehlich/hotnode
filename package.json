@@ -1,0 +1,26 @@
+{ "name" : "hotnode"
+, "description" : "Hot code loading for node.js"
+, "version" : "0.1"
+, "homepage" : "http://www.filshmedia.net"
+, "author" : "Sascha Gehlich <contact@filshmedia.net> (http://www.filshmedia.net)"
+, "contributors" :
+  [ "Sebastian Deutsch <sebastian.deutsch@9elements.com> (http://9elements.com)" ]
+, "repository" :
+  { "type" : "git"
+  , "url" : "http://github.com/saschagehlich/hotnode"
+  }
+, "bugs" :
+  { "mail" : "npm-@googlegroups.com"
+  , "web" : "http://github.com/isaacs/npm/issues"
+  }
+, "directories" : { "doc" : "./doc", "man" : "./man1", "lib" : "./lib" }
+, "bin" : { "npm" : "./cli.js" }
+, "main" : "npm"
+, "engines" : { "node" : ">=0.2.0" }
+, "scripts" : { "test" : "make test" }
+, "licenses" :
+  [ { "type" : "MIT"
+    , "url" : "http://github.com/isaacs/npm/raw/master/LICENSE"
+    }
+  ]
+}
