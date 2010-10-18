@@ -10,14 +10,14 @@
   , "url" : "http://github.com/saschagehlich/hotnode"
   }
 , "bugs" :
-  { "mail" : "npm-@googlegroups.com"
-  , "web" : "http://github.com/isaacs/npm/issues"
+  { "mail" : "contact@filshmedia.net"
+  , "web" : "http://github.com/saschagehlich/hotnode/issues"
   }
-, "directories" : { "doc" : "./doc", "man" : "./man1", "lib" : "./lib" }
-, "bin" : { "npm" : "./cli.js" }
-, "main" : "npm"
-, "engines" : { "node" : ">=0.2.0" }
-, "scripts" : { "test" : "make test" }
+, "directories" : {  }
+, "bin" : { "hotnode" : "./hotnode.js" }
+, "main" : "hotnode"
+, "engines" : { "node" : ">=0.2.2" }
+, "scripts" : {  }
 , "licenses" :
   [ { "type" : "MIT"
     , "url" : "http://github.com/isaacs/npm/raw/master/LICENSE"
