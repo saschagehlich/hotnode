@@ -10,7 +10,7 @@ LEVELS =
 
 task 'watch', 'watches and compiles coffee', ->
   puts "Spawning coffee watcher for node"
-  coffee = spawn 'coffee', ['-cwl', '--no-wrap', '-o', './', './']
+  coffee = spawn 'coffee', ['-cwl', '--no-wrap', '-o', 'javascript', 'coffeescript']
   puts ""
   
   [coffee].forEach (child) ->

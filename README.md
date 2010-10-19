@@ -17,6 +17,8 @@ The following versions are required for Hotload:
 * Node.js >= 0.2.2
 * npm >= 0.1.25
 
+To see growl messages as soon as your node.js process has been restarted, you will need [http://growl.info/extras.php#growlnotify](growlnotify), a command-line based tool for growl.
+
 Install it simply via npm:
 
     npm install hotnode
@@ -32,4 +34,4 @@ Launch it with
 License
 =======
 
-Copyright (c) 2010 [filshmedia.net](FILSH Media GmbH), released under the MIT license
+Copyright (c) 2010 [http://www.filshmedia.net](FILSH Media GmbH), released under the MIT license
