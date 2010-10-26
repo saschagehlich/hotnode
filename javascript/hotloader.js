@@ -28,8 +28,14 @@ exports.HotLoader = (function() {
     return exec("growlnotify -m \"" + (message) + "\" -t \"" + (title) + "\" --image " + (__dirname) + "/nodejs.png");
   };
   _a.prototype.run = function() {
-    var extName, match, self, watch;
-    extName = (match = this.args[this.args.length - 1].match(/^-t=(.*)/)) ? match[1] : "js";
+    var extName, match, self, typeOptions, watch;
+    extName = "js";
+    typeOptions = this.args.filter(function(arg) {
+      return arg.match(/^-t=(.*)$/);
+    });
+    if (typeOptions.length > 0 && (match = typeOptions[typeOptions.length - 1].match(/^-t=(.*)/))) {
+      extName = match[1];
+    }
     self = this;
     watch = exec("find . -name \"*." + (extName) + "\"");
     watch.stdout.on("data", function(data) {

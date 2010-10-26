@@ -28,7 +28,13 @@ exports.HotLoader = class
   
   # File watching functions
   run: ->  
-    extName = if match = @args[@args.length - 1].match(/^-t=(.*)/) then match[1] else "js"
+    extName = "js"  # Listen to .js per default
+    
+    typeOptions = @args.filter (arg) ->
+      arg.match(/^-t=(.*)$/)
+     
+    if typeOptions.length > 0 && match = typeOptions[typeOptions.length - 1].match(/^-t=(.*)/)
+      extName = match[1]
     
     self = this
     watch = exec "find . -name \"*.#{extName}\""
