@@ -4,7 +4,10 @@
 , "homepage" : "http://www.filshmedia.net"
 , "author" : "Sascha Gehlich <contact@filshmedia.net> (http://www.filshmedia.net)"
 , "contributors" :
-  [ "Sebastian Deutsch <sebastian.deutsch@9elements.com> (http://9elements.com)" ]
+  [ 
+      "Sebastian Deutsch <sebastian.deutsch@9elements.com> (http://9elements.com)"
+    , "Andreas Wolff <andreas@phunkwork.com> (http://phunkwork.com)"
+  ]
 , "repository" :
   { "type" : "git"
   , "url" : "http://github.com/saschagehlich/hotnode"

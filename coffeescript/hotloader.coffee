@@ -27,9 +27,11 @@ exports.HotLoader = class
     exec "growlnotify -m \"#{message}\" -t \"#{title}\" --image #{__dirname}/nodejs.png"
   
   # File watching functions
-  run: ->
+  run: ->  
+    extName = if match = @args[@args.length - 1].match(/^-t=(.*)/) then match[1] else "js"
+    
     self = this
-    watch = exec "find . -name \"*.js\""
+    watch = exec "find . -name \"*.#{extName}\""
     watch.stdout.on "data", (data) ->
       files = data.split "\n"
       for file in files
