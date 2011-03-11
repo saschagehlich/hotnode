@@ -1,7 +1,7 @@
 Hotnode
 =======
 
-Hotnode is a package that allows you to hot load your code by just saving the source in your editor.
+Hotnode is a package that allows you to automatically reload your code by just saving the source in your editor.
 
 Feature Overview
 -----------------
@@ -12,7 +12,7 @@ Feature Overview
 Installation
 ============
 
-The following versions are required for Hotload:
+The following versions are required for Hotnode:
 
 * Node.js >= 0.2.2
 * npm >= 0.1.25
