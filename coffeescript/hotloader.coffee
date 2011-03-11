@@ -1,6 +1,7 @@
 exec = require('child_process').exec
 spawn = require('child_process').spawn
 fs = require('fs')
+sys = require('sys')
 
 exports.HotLoader = class
   constructor: (args) ->
@@ -53,7 +54,7 @@ exports.HotLoader = class
       env: process.env
       
     @process.stdout.on "data", (data) ->
-      console.log data.toString()
+      sys.print data.toString()
     @process.stderr.on "data", (data) ->
       self.stderrOutput data.toString(), false
     

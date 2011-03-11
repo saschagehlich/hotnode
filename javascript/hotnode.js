@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var HotLoader, VERSION, args, loader, path;
 path = require('path');
 HotLoader = require('./hotloader').HotLoader;
@@ -5,7 +6,7 @@ VERSION = "0.0.2";
 args = process.argv;
 if (args.length > 2) {
   if (args[2] === "-v" || args[2] === "--version") {
-    console.log("v" + (VERSION));
+    console.log("v" + VERSION);
   } else {
     loader = new HotLoader(args);
     loader.run();

@@ -9,9 +9,9 @@ LEVELS =
   advanced: 'ADVANCED_OPTIMIZATIONS'
 
 task 'watch', 'watches and compiles coffee', ->
-  puts "Spawning coffee watcher for node"
-  coffee = spawn 'coffee', ['-cwl', '--no-wrap', '-o', 'javascript', 'coffeescript']
-  puts ""
+  sys.print "Spawning coffee watcher for node"
+  coffee = spawn 'coffee', ['-cwl', '--bare', '-o', 'javascript', 'coffeescript']
+  sys.print ""
   
   [coffee].forEach (child) ->
       child.stdout.on 'data', (data) -> 
