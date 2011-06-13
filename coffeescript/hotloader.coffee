@@ -6,6 +6,28 @@ sys = require('sys')
 exports.HotLoader = class
   constructor: (args) ->
     @args = args
+    
+    @passedArguments = @args.slice 2
+    
+    @extName = "js"
+    @launcher = "node"
+    
+    extOptions = @args.filter (arg) ->
+      arg.match /^-t=(.*)$/
+    launcherOptions = @args.filter (arg) ->
+      arg.match /^-l=(.*)$/
+    
+    if extOptions.length > 0 and match = extOptions[extOptions.length-1].match /^-t=(.*)/
+      @extName = match[1]
+      
+      for arg, i in @passedArguments when arg is "-t=#{match[1]}"
+        @passedArguments.splice i, 1
+    
+    if launcherOptions.length > 0 and match = launcherOptions[launcherOptions.length-1].match /^-l=(.*)/
+      @launcher = match[1]
+      
+      for arg, i in @passedArguments when arg is "-l=#{match[1]}"
+        @passedArguments.splice i, 1
   
   # Output functions
   output: (message, good) ->
@@ -29,16 +51,8 @@ exports.HotLoader = class
   
   # File watching functions
   run: ->  
-    extName = "js"  # Listen to .js per default
-    
-    typeOptions = @args.filter (arg) ->
-      arg.match(/^-t=(.*)$/)
-     
-    if typeOptions.length > 0 && match = typeOptions[typeOptions.length - 1].match(/^-t=(.*)/)
-      extName = match[1]
-    
     self = this
-    watch = exec "find . -name \"*.#{extName}\""
+    watch = exec "find . -name \"*.#{@extName}\""
     watch.stdout.on "data", (data) ->
       files = data.split "\n"
       for file in files
@@ -50,7 +64,7 @@ exports.HotLoader = class
     
   startProcess: ->
     self = this
-    @process = spawn "node", @args.slice(2), 
+    @process = spawn @launcher, @passedArguments, 
       env: process.env
       
     @process.stdout.on "data", (data) ->

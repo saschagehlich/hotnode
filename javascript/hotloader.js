@@ -3,9 +3,39 @@ exec = require('child_process').exec;
 spawn = require('child_process').spawn;
 fs = require('fs');
 sys = require('sys');
-exports.HotLoader = function() {
+exports.HotLoader = (function() {
   function _Class(args) {
+    var arg, extOptions, i, launcherOptions, match, _len, _len2, _ref, _ref2;
     this.args = args;
+    this.passedArguments = this.args.slice(2);
+    this.extName = "js";
+    this.launcher = "node";
+    extOptions = this.args.filter(function(arg) {
+      return arg.match(/^-t=(.*)$/);
+    });
+    launcherOptions = this.args.filter(function(arg) {
+      return arg.match(/^-l=(.*)$/);
+    });
+    if (extOptions.length > 0 && (match = extOptions[extOptions.length - 1].match(/^-t=(.*)/))) {
+      this.extName = match[1];
+      _ref = this.passedArguments;
+      for (i = 0, _len = _ref.length; i < _len; i++) {
+        arg = _ref[i];
+        if (arg === ("-t=" + match[1])) {
+          this.passedArguments.splice(i, 1);
+        }
+      }
+    }
+    if (launcherOptions.length > 0 && (match = launcherOptions[launcherOptions.length - 1].match(/^-l=(.*)/))) {
+      this.launcher = match[1];
+      _ref2 = this.passedArguments;
+      for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
+        arg = _ref2[i];
+        if (arg === ("-l=" + match[1])) {
+          this.passedArguments.splice(i, 1);
+        }
+      }
+    }
   }
   _Class.prototype.output = function(message, good) {
     var output, self;
@@ -28,32 +58,22 @@ exports.HotLoader = function() {
     return exec("growlnotify -m \"" + message + "\" -t \"" + title + "\" --image " + __dirname + "/nodejs.png");
   };
   _Class.prototype.run = function() {
-    var extName, match, self, typeOptions, watch;
-    extName = "js";
-    typeOptions = this.args.filter(function(arg) {
-      return arg.match(/^-t=(.*)$/);
-    });
-    if (typeOptions.length > 0 && (match = typeOptions[typeOptions.length - 1].match(/^-t=(.*)/))) {
-      extName = match[1];
-    }
+    var self, watch;
     self = this;
-    watch = exec("find . -name \"*." + extName + "\"");
+    watch = exec("find . -name \"*." + this.extName + "\"");
     watch.stdout.on("data", function(data) {
-      var files, _fn, _i, _len, _results;
+      var file, files, _i, _len, _results;
       files = data.split("\n");
-      _fn = function(file) {
-        return _results.push(file ? fs.watchFile(file, {
+      _results = [];
+      for (_i = 0, _len = files.length; _i < _len; _i++) {
+        file = files[_i];
+        _results.push(file ? fs.watchFile(file, {
           interval: 100
         }, function(prev, curr) {
           if (Number(new Date(prev.mtime)) !== Number(new Date(curr.mtime))) {
             return self.restartProcess(file.replace(/\.\//, ""));
           }
         }) : void 0);
-      };
-      _results = [];
-      for (_i = 0, _len = files.length; _i < _len; _i++) {
-        file = files[_i];
-        _fn(file);
       }
       return _results;
     });
@@ -62,7 +82,7 @@ exports.HotLoader = function() {
   _Class.prototype.startProcess = function() {
     var self;
     self = this;
-    this.process = spawn("node", this.args.slice(2), {
+    this.process = spawn(this.launcher, this.passedArguments, {
       env: process.env
     });
     this.process.stdout.on("data", function(data) {
@@ -86,4 +106,4 @@ exports.HotLoader = function() {
     return this.startProcess();
   };
   return _Class;
-}();
+})();
