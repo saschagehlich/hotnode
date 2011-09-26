@@ -19,6 +19,10 @@ The following versions are required for Hotnode:
 
 To see growl messages as soon as your node.js process has been restarted, you will need [http://growl.info/extras.php#growlnotify](growlnotify), a command-line based tool for growl.
 
+For notifications on Ubuntu / Gnome, you need libnotify:
+
+    sudo apt-get install libnotify-bin
+
 Install it simply via npm:
 
     npm install hotnode
@@ -35,3 +39,4 @@ License
 =======
 
 Copyright (c) 2010 [http://www.filshmedia.net](FILSH Media GmbH), released under the MIT license
+
