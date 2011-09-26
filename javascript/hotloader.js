@@ -55,7 +55,11 @@ exports.HotLoader = (function() {
     return console.log(output);
   };
   _Class.prototype.growl = function(message, title) {
-    return exec("growlnotify -m \"" + message + "\" -t \"" + title + "\" --image " + __dirname + "/nodejs.png");
+    if (process.env.DESKTOP_SESSION.indexOf("gnome") !== -1) {
+      return exec("notify-send --icon " + __dirname + "/nodejs.png \"" + title + "\" \"" + message + "\" ");
+    } else {
+      return exec("growlnotify -m \"" + message + "\" -t \"" + title + "\" --image " + __dirname + "/nodejs.png");
+    }
   };
   _Class.prototype.run = function() {
     var self, watch;
