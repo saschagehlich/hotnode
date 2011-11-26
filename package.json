@@ -1,6 +1,6 @@
 { "name" : "hotnode"
 , "description" : "Hot code loading for node.js"
-, "version" : "0.0.4"
+, "version" : "0.0.5"
 , "homepage" : "http://www.filshmedia.net"
 , "author" : "Sascha Gehlich <contact@filshmedia.net> (http://www.filshmedia.net)"
 , "contributors" :
@@ -14,10 +14,10 @@
   }
 , "bugs" :
   { "mail" : "contact@filshmedia.net"
-  , "web" : "http://github.com/saschagehlich/hotnode/issues"
+  , "url" : "http://github.com/saschagehlich/hotnode/issues"
   }
 , "directories" : { "javascript": "./javascript" }
-, "bin" : { "hotnode" : "./javascript/hotnode.js" }
+, "bin" : { "hotnode" : "./javascript/hotnode.js", "hotcoffee" : "./javascript/hotcoffee.js" }
 , "main" : "hotnode"
 , "engines" : { "node" : ">=0.2.2" }
 , "scripts" : {  }

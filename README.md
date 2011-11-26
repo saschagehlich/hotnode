@@ -35,6 +35,12 @@ Instead of starting your app directly with
 Launch it with
     hotnode app.js
 
+
+Hotcoffee
+=========
+
+Hotnode also includes an executable called `hotcoffee` which automatically runs the given file with the `coffee` command and watches all CoffeeScript files in the directory.
+
 License
 =======
 
