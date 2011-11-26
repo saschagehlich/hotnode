@@ -6,29 +6,29 @@ sys = require('sys')
 exports.HotLoader = class
   constructor: (args) ->
     @args = args
-    
+
     @passedArguments = @args.slice 2
-    
+
     @extName = "js"
     @launcher = "node"
-    
+
     extOptions = @args.filter (arg) ->
       arg.match /^-t=(.*)$/
     launcherOptions = @args.filter (arg) ->
       arg.match /^-l=(.*)$/
-    
+
     if extOptions.length > 0 and match = extOptions[extOptions.length-1].match /^-t=(.*)/
       @extName = match[1]
-      
+
       for arg, i in @passedArguments when arg is "-t=#{match[1]}"
         @passedArguments.splice i, 1
-    
+
     if launcherOptions.length > 0 and match = launcherOptions[launcherOptions.length-1].match /^-l=(.*)/
       @launcher = match[1]
-      
+
       for arg, i in @passedArguments when arg is "-l=#{match[1]}"
         @passedArguments.splice i, 1
-  
+
   # Output functions
   output: (message, good) ->
     self = this
@@ -37,20 +37,23 @@ exports.HotLoader = class
       output += "32m"
     else
       output += "31m"
-    
+
     output += "#{message}\033[m"
-    
+
     console.log output
-  
+
   stderrOutput: (message) ->
     output = "\033[0;31m#{message}\033[m"
     console.log output
-    
+
   growl: (message, title) ->
-    exec "growlnotify -m \"#{message}\" -t \"#{title}\" --image #{__dirname}/nodejs.png"
-  
+    if process.env.DESKTOP_SESSION.indexOf("gnome") != -1
+      exec "notify-send --icon #{__dirname}/nodejs.png \"#{title}\" \"#{message}\" "
+    else
+      exec "growlnotify -m \"#{message}\" -t \"#{title}\" --image #{__dirname}/nodejs.png"
+
   # File watching functions
-  run: ->  
+  run: ->
     self = this
     watch = exec "find . -name \"*.#{@extName}\""
     watch.stdout.on "data", (data) ->
@@ -61,20 +64,20 @@ exports.HotLoader = class
             if Number(new Date(prev.mtime)) != Number(new Date(curr.mtime))
               self.restartProcess(file.replace(/\.\//, ""))
     @startProcess()
-    
+
   startProcess: ->
     self = this
-    @process = spawn @launcher, @passedArguments, 
+    @process = spawn @launcher, @passedArguments,
       env: process.env
-      
+
     @process.stdout.on "data", (data) ->
       sys.print data.toString()
     @process.stderr.on "data", (data) ->
       self.stderrOutput data.toString(), false
-    
+
     @output "Node.js process restarted", true
     @growl "Node.js process restarted", "Hotnode"
-  
+
   restartProcess: (filename) ->
     if @process?
       try
@@ -83,3 +86,4 @@ exports.HotLoader = class
         @output "Exception: #{e.message}", false
     @output "#{filename} changed", false
     @startProcess()
+
