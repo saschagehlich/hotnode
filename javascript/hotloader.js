@@ -3,13 +3,13 @@ exec = require('child_process').exec;
 spawn = require('child_process').spawn;
 fs = require('fs');
 sys = require('sys');
-exports.HotLoader = (function() {
-  function _Class(args) {
+exports.HotLoader = function() {
+  function _Class(args, extName, launcher) {
     var arg, extOptions, i, launcherOptions, match, _len, _len2, _ref, _ref2;
+    this.extName = extName;
+    this.launcher = launcher;
     this.args = args;
     this.passedArguments = this.args.slice(2);
-    this.extName = "js";
-    this.launcher = "node";
     extOptions = this.args.filter(function(arg) {
       return arg.match(/^-t=(.*)$/);
     });
@@ -55,7 +55,7 @@ exports.HotLoader = (function() {
     return console.log(output);
   };
   _Class.prototype.growl = function(message, title) {
-    if (process.env.DESKTOP_SESSION.indexOf("gnome") !== -1) {
+    if (process.env.DESKTOP_SESSION && process.env.DESKTOP_SESSION.indexOf("gnome") !== -1) {
       return exec("notify-send --icon " + __dirname + "/nodejs.png \"" + title + "\" \"" + message + "\" ");
     } else {
       return exec("growlnotify -m \"" + message + "\" -t \"" + title + "\" --image " + __dirname + "/nodejs.png");
@@ -66,18 +66,21 @@ exports.HotLoader = (function() {
     self = this;
     watch = exec("find . -name \"*." + this.extName + "\"");
     watch.stdout.on("data", function(data) {
-      var file, files, _i, _len, _results;
+      var file, files, _fn, _i, _len, _results;
       files = data.split("\n");
-      _results = [];
-      for (_i = 0, _len = files.length; _i < _len; _i++) {
-        file = files[_i];
-        _results.push(file ? fs.watchFile(file, {
+      _fn = function(file) {
+        return _results.push(file ? fs.watchFile(file, {
           interval: 100
         }, function(prev, curr) {
           if (Number(new Date(prev.mtime)) !== Number(new Date(curr.mtime))) {
             return self.restartProcess(file.replace(/\.\//, ""));
           }
         }) : void 0);
+      };
+      _results = [];
+      for (_i = 0, _len = files.length; _i < _len; _i++) {
+        file = files[_i];
+        _fn(file);
       }
       return _results;
     });
@@ -110,4 +113,4 @@ exports.HotLoader = (function() {
     return this.startProcess();
   };
   return _Class;
-})();
+}();

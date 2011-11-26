@@ -4,13 +4,10 @@ fs = require('fs')
 sys = require('sys')
 
 exports.HotLoader = class
-  constructor: (args) ->
+  constructor: (args, @extName, @launcher) ->
     @args = args
 
     @passedArguments = @args.slice 2
-
-    @extName = "js"
-    @launcher = "node"
 
     extOptions = @args.filter (arg) ->
       arg.match /^-t=(.*)$/
@@ -47,7 +44,7 @@ exports.HotLoader = class
     console.log output
 
   growl: (message, title) ->
-    if process.env.DESKTOP_SESSION.indexOf("gnome") != -1
+    if process.env.DESKTOP_SESSION and process.env.DESKTOP_SESSION.indexOf("gnome") != -1
       exec "notify-send --icon #{__dirname}/nodejs.png \"#{title}\" \"#{message}\" "
     else
       exec "growlnotify -m \"#{message}\" -t \"#{title}\" --image #{__dirname}/nodejs.png"

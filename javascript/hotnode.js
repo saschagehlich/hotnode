@@ -8,7 +8,7 @@ if (args.length > 2) {
   if (args[2] === "-v" || args[2] === "--version") {
     console.log("v" + VERSION);
   } else {
-    loader = new HotLoader(args);
+    loader = new HotLoader(args, "js", "node");
     loader.run();
   }
 } else {
