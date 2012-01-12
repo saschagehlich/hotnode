@@ -45,7 +45,7 @@ exports.HotLoader = class
 
   growl: (message, title) ->
     if process.env.DESKTOP_SESSION and process.env.DESKTOP_SESSION.indexOf("gnome") != -1
-      exec "notify-send --icon #{__dirname}/nodejs.png \"#{title}\" \"#{message}\" "
+      exec "notify-send --hint=int:transient:1 --icon #{__dirname}/nodejs.png \"#{title}\" \"#{message}\" "
     else
       exec "growlnotify -m \"#{message}\" -t \"#{title}\" --image #{__dirname}/nodejs.png"
 
