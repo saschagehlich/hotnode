@@ -1,4 +1,4 @@
-var exec, fs, spawn, util;
+var exec, fs, spawn, util, watch;
 
 exec = require('child_process').exec;
 
@@ -7,6 +7,8 @@ spawn = require('child_process').spawn;
 fs = require('fs');
 
 util = require('util');
+
+watch = require('watch');
 
 exports.HotLoader = (function() {
 
@@ -40,14 +42,18 @@ exports.HotLoader = (function() {
     }
   }
 
-  _Class.prototype.output = function(message, good) {
-    var output, self;
-    self = this;
+  _Class.prototype.output = function(message, type) {
+    var output;
     output = "\033[0;30mhotnode: \033[1;";
-    if (good) {
-      output += "32m";
-    } else {
-      output += "31m";
+    switch (type) {
+      case "good":
+        output += "32m";
+        break;
+      case "bad":
+        output += "31m";
+        break;
+      case "info":
+        output += "35m";
     }
     output += "" + message + "\033[m";
     return console.log(output);
@@ -60,7 +66,7 @@ exports.HotLoader = (function() {
   };
 
   _Class.prototype.growl = function(message, title) {
-    if (process.env.DESKTOP_SESSION && process.env.DESKTOP_SESSION.indexOf("gnome") !== -1) {
+    if (process.env.DESKTOP_SESSION && ~process.env.DESKTOP_SESSION.indexOf("gnome")) {
       return exec("notify-send --hint=int:transient:1 --icon " + __dirname + "/nodejs.png \"" + title + "\" \"" + message + "\" ");
     } else {
       return exec("growlnotify -m \"" + message + "\" -t \"" + title + "\" --image " + __dirname + "/nodejs.png");
@@ -68,35 +74,28 @@ exports.HotLoader = (function() {
   };
 
   _Class.prototype.run = function() {
-    var self, watch;
-    self = this;
-    watch = exec("find . -name \"*." + this.extName + "\"");
-    watch.stdout.on("data", function(data) {
-      var file, files, _i, _len, _results;
-      files = data.split("\n");
-      _results = [];
-      for (_i = 0, _len = files.length; _i < _len; _i++) {
-        file = files[_i];
-        if (file) {
-          _results.push(fs.watchFile(file, {
-            interval: 100
-          }, function(prev, curr) {
-            if (Number(new Date(prev.mtime)) !== Number(new Date(curr.mtime))) {
-              return self.restartProcess(file.replace(/\.\//, ""));
-            }
-          }));
+    var _this = this;
+    watch.watchTree('./', function(f, curr, prev) {
+      var regex;
+      regex = "\.coffee$";
+      if (RegExp(regex).test(f)) {
+        if (typeof f === "object" && prev === null && curr === null) {} else if (prev === null) {
+          _this.output("New file: " + f, "info");
+          return _this.restartProcess();
+        } else if (curr.nlink === 0) {
+          _this.output("" + f + " has been deleted", "info");
+          return _this.restartProcess();
         } else {
-          _results.push(void 0);
+          _this.output("" + f + " has been changed", "info");
+          return _this.restartProcess();
         }
       }
-      return _results;
     });
     return this.startProcess();
   };
 
   _Class.prototype.startProcess = function() {
-    var self;
-    self = this;
+    var _this = this;
     this.process = spawn(this.launcher, this.passedArguments, {
       env: process.env
     });
@@ -104,21 +103,20 @@ exports.HotLoader = (function() {
       return util.print(data.toString());
     });
     this.process.stderr.on("data", function(data) {
-      return self.stderrOutput(data.toString(), false);
+      return self.stderrOutput(data.toString());
     });
-    this.output("" + this.launcher + " process restarted", true);
+    this.output("" + this.launcher + " process restarted", "good");
     return this.growl("" + this.launcher + " process restarted", "Hot" + this.launcher);
   };
 
-  _Class.prototype.restartProcess = function(filename) {
+  _Class.prototype.restartProcess = function() {
     if (this.process != null) {
       try {
         this.process.kill("SIGKILL");
       } catch (e) {
-        this.output("Exception: " + e.message, false);
+        this.output("Exception: " + e.message, "bad");
       }
     }
-    this.output("" + filename + " changed", false);
     return this.startProcess();
   };
 

@@ -2,24 +2,27 @@ exec = require('child_process').exec
 spawn = require('child_process').spawn
 fs = require('fs')
 util = require('util')
+watch = require('watch')
 
 exports.HotLoader = class
   constructor: (args, @extName, @launcher) ->
     @args = args
-
     @passedArguments = @args.slice 2
-
+    
+    # Argument handling
     extOptions = @args.filter (arg) ->
       arg.match /^-t=(.*)$/
     launcherOptions = @args.filter (arg) ->
       arg.match /^-l=(.*)$/
 
+    # check for "-t" argument (type)
     if extOptions.length > 0 and match = extOptions[extOptions.length-1].match /^-t=(.*)/
       @extName = match[1]
 
       for arg, i in @passedArguments when arg is "-t=#{match[1]}"
         @passedArguments.splice i, 1
 
+    # check for "-l" argument (launcher)
     if launcherOptions.length > 0 and match = launcherOptions[launcherOptions.length-1].match /^-l=(.*)/
       @launcher = match[1]
 
@@ -27,16 +30,17 @@ exports.HotLoader = class
         @passedArguments.splice i, 1
 
   # Output functions
-  output: (message, good) ->
-    self = this
+  output: (message, type) ->
     output = "\033[0;30mhotnode: \033[1;"
-    if good
-      output += "32m"
-    else
-      output += "31m"
+    switch type
+      when "good"
+        output += "32m"
+      when "bad"
+        output += "31m"
+      when "info"
+        output += "35m"
 
     output += "#{message}\033[m"
-
     console.log output
 
   stderrOutput: (message) ->
@@ -44,43 +48,47 @@ exports.HotLoader = class
     console.log output
 
   growl: (message, title) ->
-    if process.env.DESKTOP_SESSION and process.env.DESKTOP_SESSION.indexOf("gnome") != -1
+    if process.env.DESKTOP_SESSION and ~process.env.DESKTOP_SESSION.indexOf("gnome")
       exec "notify-send --hint=int:transient:1 --icon #{__dirname}/nodejs.png \"#{title}\" \"#{message}\" "
     else
       exec "growlnotify -m \"#{message}\" -t \"#{title}\" --image #{__dirname}/nodejs.png"
 
   # File watching functions
   run: ->
-    self = this
-    watch = exec "find . -name \"*.#{@extName}\""
-    watch.stdout.on "data", (data) ->
-      files = data.split "\n"
-      for file in files
-        if file
-          fs.watchFile file, { interval: 100 }, (prev, curr) ->
-            if Number(new Date(prev.mtime)) != Number(new Date(curr.mtime))
-              self.restartProcess(file.replace(/\.\//, ""))
+    watch.watchTree './', (f, curr, prev) =>
+      regex = "\.coffee$"
+      if RegExp(regex).test f
+        if typeof f is "object" and prev is null and curr is null
+          # finished walking trees... maybe we need this later?
+        else if prev is null
+          @output "New file: #{f}", "info"
+          @restartProcess()
+        else if curr.nlink is 0
+          @output "#{f} has been deleted", "info"
+          @restartProcess()
+        else
+          @output "#{f} has been changed", "info"
+          @restartProcess()
+    
     @startProcess()
 
   startProcess: ->
-    self = this
     @process = spawn @launcher, @passedArguments,
       env: process.env
 
-    @process.stdout.on "data", (data) ->
+    @process.stdout.on "data", (data) =>
       util.print data.toString()
-    @process.stderr.on "data", (data) ->
-      self.stderrOutput data.toString(), false
+    @process.stderr.on "data", (data) =>
+      self.stderrOutput data.toString()
     
-    @output "#{@launcher} process restarted", true
+    @output "#{@launcher} process restarted", "good"
     @growl "#{@launcher} process restarted", "Hot#{@launcher}"
 
-  restartProcess: (filename) ->
+  restartProcess: ->
     if @process?
       try
         @process.kill("SIGKILL")
       catch e
-        @output "Exception: #{e.message}", false
-    @output "#{filename} changed", false
+        @output "Exception: #{e.message}", "bad"
     @startProcess()
 

@@ -16,6 +16,7 @@
   { "mail" : "contact@filshmedia.net"
   , "url" : "http://github.com/saschagehlich/hotnode/issues"
   }
+, "dependencies" : { "watch" : "0.5.0" }
 , "directories" : { "javascript": "./javascript" }
 , "bin" : { "hotnode" : "./javascript/hotnode.js", "hotcoffee" : "./javascript/hotcoffee.js" }
 , "main" : "hotnode"
