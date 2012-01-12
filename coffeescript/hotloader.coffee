@@ -1,7 +1,7 @@
 exec = require('child_process').exec
 spawn = require('child_process').spawn
 fs = require('fs')
-sys = require('sys')
+util = require('util')
 
 exports.HotLoader = class
   constructor: (args, @extName, @launcher) ->
@@ -68,12 +68,12 @@ exports.HotLoader = class
       env: process.env
 
     @process.stdout.on "data", (data) ->
-      sys.print data.toString()
+      util.print data.toString()
     @process.stderr.on "data", (data) ->
       self.stderrOutput data.toString(), false
-
-    @output "Node.js process restarted", true
-    @growl "Node.js process restarted", "Hotnode"
+    
+    @output "#{@launcher} process restarted", true
+    @growl "#{@launcher} process restarted", "Hot#{@launcher}"
 
   restartProcess: (filename) ->
     if @process?

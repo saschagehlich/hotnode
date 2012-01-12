@@ -2,7 +2,7 @@
 var HotLoader, VERSION, args, loader, path;
 path = require('path');
 HotLoader = require('./hotloader').HotLoader;
-VERSION = "0.0.5";
+VERSION = "0.0.6";
 args = process.argv;
 if (args.length > 2) {
   if (args[2] === "-v" || args[2] === "--version") {
