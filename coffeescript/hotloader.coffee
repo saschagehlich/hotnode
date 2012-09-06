@@ -31,20 +31,24 @@ exports.HotLoader = class
 
   # Output functions
   output: (message, type) ->
-    output = "\033[0;30mhotnode: \033[1;"
+    
     switch type
       when "good"
-        output += "32m"
+        textcolor = "32m"
+        prefixcolor = "42m"
       when "bad"
-        output += "31m"
+        textcolor = "31m"
+        prefixcolor = "41m"
       when "info"
-        output += "35m"
+        textcolor = "35m"
+        prefixcolor = "45m"
 
-    output += "#{message}\033[m"
+    output = "\u001b[0;#{prefixcolor}    hotnode \u001b[m \u001b[0;#{textcolor}#{message}\u001b[m"
+
     console.log output
 
   stderrOutput: (message) ->
-    output = "\033[0;31m#{message}\033[m"
+    output = "\u001b[0;31m#{message}\u001b[m"
     console.log output
 
   growl: (message, title) ->
