@@ -60,7 +60,7 @@ exports.HotLoader = class
   # File watching functions
   run: ->
     watch.watchTree './', (f, curr, prev) =>
-      regex = "\.coffee$"
+      regex = "\.#{@extName}$"
       if RegExp(regex).test f
         if typeof f is "object" and prev is null and curr is null
           # finished walking trees... maybe we need this later?
