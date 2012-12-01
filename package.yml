@@ -1,7 +1,7 @@
 ---
   name: "hotnode"
   description: "Hot code loading for node.js"
-  version: "0.0.7"
+  version: "0.0.8"
   homepage: "http://www.filshmedia.net"
   author: "Sascha Gehlich <contact@filshmedia.net> (http://www.filshmedia.net)"
   contributors: 
