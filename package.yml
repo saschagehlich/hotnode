@@ -28,3 +28,4 @@
     - 
       type: "MIT"
       url: "http://github.com/isaacs/npm/raw/master/LICENSE"
+  preferGlobal: true
