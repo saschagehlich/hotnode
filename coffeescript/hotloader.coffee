@@ -83,7 +83,7 @@ exports.HotLoader = class
     @process.stdout.on "data", (data) =>
       util.print data.toString()
     @process.stderr.on "data", (data) =>
-      self.stderrOutput data.toString()
+      @stderrOutput data.toString()
     
     @output "#{@launcher} process restarted", "good"
     @growl "#{@launcher} process restarted", "Hot#{@launcher}"

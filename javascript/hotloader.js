@@ -112,7 +112,7 @@ exports.HotLoader = (function() {
       return util.print(data.toString());
     });
     this.process.stderr.on("data", function(data) {
-      return self.stderrOutput(data.toString());
+      return _this.stderrOutput(data.toString());
     });
     this.output("" + this.launcher + " process restarted", "good");
     return this.growl("" + this.launcher + " process restarted", "Hot" + this.launcher);
